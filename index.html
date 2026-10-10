@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
+    />
+    <title>Calculadora de laboratorio</title>
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#1746a2" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0d2a5c" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="LabCalc" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icon-180.png" />
+    <style>
+      :root {
+        --bg: #eef4fb;
+        --card: #ffffff;
+        --field: #f3f7fc;
+        --text: #0f2238;
+        --muted: #5b7089;
+        --line: #d3e0ef;
+        --accent: #1d5fd1;
+        --accent-soft: #e3eefc;
+        --on-accent: #ffffff;
+        --head-a: #1746a2;
+        --head-b: #2b7de9;
+        --warn: #b45309;
+        --shadow: 0 1px 2px rgba(15, 34, 56, 0.05), 0 8px 24px rgba(23, 70, 162, 0.08);
+        --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+        --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0a1422;
+          --card: #111f33;
+          --field: #0c1829;
+          --text: #e6eefa;
+          --muted: #8ea4c0;
+          --line: #1f3350;
+          --accent: #5aa2ff;
+          --accent-soft: #14294a;
+          --on-accent: #06162e;
+          --head-a: #0d2a5c;
+          --head-b: #164a9c;
+          --warn: #fbbf24;
+          --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        -webkit-tap-highlight-color: transparent;
+        -webkit-text-size-adjust: 100%;
+        overscroll-behavior: none;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+        font-size: 15px;
+        line-height: 1.45;
+      }
+
+      header {
+        position: relative;
+        overflow: hidden;
+        color: #fff;
+        background: linear-gradient(135deg, var(--head-a), var(--head-b));
+        padding: calc(20px + env(safe-area-inset-top, 0px)) 16px 56px;
+      }
+
+      header::before,
+      header::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      header::before {
+        width: 220px;
+        height: 220px;
+        right: -60px;
+        top: -90px;
+      }
+
+      header::after {
+        width: 140px;
+        height: 140px;
+        right: 70px;
+        bottom: -90px;
+      }
+
+      .wrap {
+        max-width: 760px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        font-size: 24px;
+        letter-spacing: -0.01em;
+        margin: 0 0 2px;
+      }
+
+      header p {
+        margin: 0;
+        opacity: 0.85;
+      }
+
+      h2 {
+        font-size: 16px;
+        margin: 0 0 12px;
+      }
+
+      main {
+        padding: 0 16px calc(96px + env(safe-area-inset-bottom, 0px));
+        margin-top: -40px;
+        position: relative;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px;
+        margin-bottom: 14px;
+        box-shadow: var(--shadow);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+
+      .grid.four {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .full {
+        grid-column: 1 / -1;
+      }
+
+      label {
+        display: block;
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      input,
+      select {
+        font: inherit;
+        font-size: 16px;
+        color: var(--text);
+        background: var(--field);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px;
+        width: 100%;
+        min-width: 0;
+        transition: border-color 150ms ease, box-shadow 150ms ease;
+      }
+
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-soft);
+      }
+
+      .grid.four input {
+        padding: 10px 6px;
+        text-align: center;
+      }
+
+      .row {
+        display: flex;
+        gap: 6px;
+      }
+
+      .row select {
+        width: auto;
+        flex: none;
+        padding: 10px 6px;
+      }
+
+      button,
+      .item {
+        font: inherit;
+        touch-action: manipulation;
+        user-select: none;
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+        cursor: pointer;
+      }
+
+      button {
+        color: var(--text);
+        background: none;
+        border: 0;
+        padding: 0;
+        transition: transform 120ms var(--ease-out);
+      }
+
+      button:active {
+        transform: scale(0.97);
+      }
+
+      button.primary {
+        width: 100%;
+        margin-top: 12px;
+        padding: 12px;
+        border-radius: 12px;
+        background: var(--accent);
+        color: var(--on-accent);
+        font-weight: 600;
+      }
+
+      /* Control segmentado con indicador deslizante */
+      .seg {
+        position: relative;
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: 1fr;
+        padding: 3px;
+        margin-bottom: 14px;
+        border-radius: 12px;
+        background: var(--accent-soft);
+      }
+
+      .seg-ind {
+        position: absolute;
+        top: 3px;
+        bottom: 3px;
+        left: 3px;
+        width: calc((100% - 6px) / var(--n));
+        border-radius: 9px;
+        background: var(--card);
+        box-shadow: 0 1px 3px rgba(15, 34, 56, 0.18);
+        transition: transform 240ms var(--ease-in-out);
+      }
+
+      .seg button {
+        position: relative;
+        padding: 9px 2px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--muted);
+        transition: color 150ms ease, transform 120ms var(--ease-out);
+      }
+
+      .seg button.active {
+        color: var(--accent);
+      }
+
+      .view,
+      .pane {
+        display: none;
+      }
+
+      .view.active,
+      .pane.active {
+        display: block;
+      }
+
+      @keyframes enter {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+      }
+
+      @keyframes fade {
+        from {
+          opacity: 0;
+        }
+      }
+
+      .view.active > .card,
+      .pane.active,
+      #compound.pop .compound-line {
+        animation: enter 220ms var(--ease-out) backwards;
+      }
+
+      .view.active > .card:nth-of-type(2) {
+        animation-delay: 40ms;
+      }
+
+      .view.active > .card:nth-of-type(3) {
+        animation-delay: 80ms;
+      }
+
+      .two {
+        display: grid;
+        gap: 14px;
+      }
+
+      .two > .card {
+        margin-bottom: 0;
+      }
+
+      @media (min-width: 700px) {
+        .two {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      .result {
+        margin-top: 14px;
+        padding: 12px 14px;
+        background: var(--accent-soft);
+        border-left: 3px solid var(--accent);
+        border-radius: 10px;
+        min-height: 46px;
+      }
+
+      .result b {
+        font-size: 19px;
+        color: var(--accent);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .result small,
+      .note {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .note {
+        margin: 10px 0 0;
+      }
+
+      .warn {
+        color: var(--warn);
+      }
+
+      .compound-line {
+        margin: 12px 0 0;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .compound-line b {
+        font-size: 16px;
+        color: var(--text);
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 14px;
+        font-size: 14px;
+      }
+
+      th,
+      td {
+        text-align: right;
+        padding: 8px 6px;
+        border-bottom: 1px solid var(--line);
+        font-variant-numeric: tabular-nums;
+      }
+
+      th:first-child,
+      td:first-child {
+        text-align: left;
+      }
+
+      th {
+        color: var(--muted);
+        font-weight: 600;
+        font-size: 12px;
+      }
+
+      /* Lista de compuestos */
+      .item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 4px;
+        border-bottom: 1px solid var(--line);
+        border-radius: 8px;
+        transition: background 120ms ease;
+      }
+
+      .item:active {
+        background: var(--accent-soft);
+      }
+
+      .item-main {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .item-main b {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .item small {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .item-mw {
+        text-align: right;
+        font-weight: 600;
+        color: var(--accent);
+        font-variant-numeric: tabular-nums;
+      }
+
+      .item-mw small {
+        display: block;
+        font-weight: 400;
+      }
+
+      .item button {
+        padding: 8px 10px;
+        color: var(--muted);
+      }
+
+      /* Barra de navegación inferior */
+      nav {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--card);
+        border-top: 1px solid var(--line);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        box-shadow: 0 -4px 20px rgba(15, 34, 56, 0.06);
+      }
+
+      .nav-inner {
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        max-width: 760px;
+        margin: 0 auto;
+      }
+
+      .nav-ind {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 25%;
+        height: 3px;
+        display: flex;
+        justify-content: center;
+        transition: transform 260ms var(--ease-in-out);
+      }
+
+      .nav-ind::after {
+        content: "";
+        width: 36px;
+        border-radius: 0 0 3px 3px;
+        background: var(--accent);
+      }
+
+      nav button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        padding: 10px 2px 8px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--muted);
+        transition: color 150ms ease, transform 120ms var(--ease-out);
+      }
+
+      nav button.active {
+        color: var(--accent);
+      }
+
+      nav svg {
+        width: 24px;
+        height: 24px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      @media (hover: hover) and (pointer: fine) {
+        .item:hover {
+          background: var(--accent-soft);
+        }
+
+        nav button:hover,
+        .seg button:hover {
+          color: var(--accent);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .view.active > .card,
+        .pane.active,
+        #compound.pop .compound-line {
+          animation: fade 200ms ease backwards;
+        }
+
+        .seg-ind,
+        .nav-ind {
+          transition: none;
+        }
+
+        button:active {
+          transform: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <h1>Calculadora de laboratorio</h1>
+        <p>Soluciones, diluciones y conversiones</p>
+      </div>
+    </header>
+
+    <main>
+      <div class="wrap">
+        <div class="card" id="compound">
+          <label for="c-search">Compuesto (escribe para buscar)</label>
+          <input id="c-search" list="c-list" placeholder="Ej.: cloruro de sodio" autocomplete="off" enterkeyhint="done" />
+          <datalist id="c-list"></datalist>
+          <div class="grid four">
+            <div>
+              <label for="c-mw">PM g/mol</label>
+              <input id="c-mw" type="number" step="any" min="0" />
+            </div>
+            <div>
+              <label for="c-pur">Pureza %</label>
+              <input id="c-pur" type="number" step="any" min="0" max="100" />
+            </div>
+            <div>
+              <label for="c-den">Dens. g/mL</label>
+              <input id="c-den" type="number" step="any" min="0" placeholder="—" />
+            </div>
+            <div>
+              <label for="c-eq">Eq/mol</label>
+              <input id="c-eq" type="number" step="any" min="0" />
+            </div>
+          </div>
+          <p class="compound-line">
+            <b id="c-name"></b> <span id="c-formula"></span><br />
+            Pureza y densidad son valores típicos: usa los de la etiqueta de tu frasco.
+          </p>
+        </div>
+
+        <!-- SOLUCIONES -->
+        <div class="view active" id="v-soluciones">
+          <div class="seg" style="--n: 4">
+            <span class="seg-ind"></span>
+            <button data-tab="molaridad" class="active">Molaridad</button>
+            <button data-tab="molalidad">Molalidad</button>
+            <button data-tab="normalidad">Normalidad</button>
+            <button data-tab="liquido">Líquido</button>
+          </div>
+
+          <div class="pane active" id="molaridad">
+            <div class="two">
+              <div class="card">
+                <h2>¿Cuánto peso?</h2>
+                <div class="grid">
+                  <div>
+                    <label for="m-c">Concentración</label>
+                    <div class="row">
+                      <input id="m-c" type="number" step="any" min="0" value="0.1" />
+                      <select id="m-cu" aria-label="Unidad de concentración">
+                        <option value="1">M</option>
+                        <option value="1e-3">mM</option>
+                        <option value="1e-6">µM</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label for="m-v">Volumen final</label>
+                    <div class="row">
+                      <input id="m-v" type="number" step="any" min="0" value="250" />
+                      <select id="m-vu" aria-label="Unidad de volumen">
+                        <option value="1e-3">mL</option>
+                        <option value="1">L</option>
+                        <option value="1e-6">µL</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="result" id="m-out"></div>
+                <p class="note">masa = M × V(L) × PM ÷ (pureza/100)</p>
+              </div>
+
+              <div class="card">
+                <h2>¿Qué molaridad preparé?</h2>
+                <div class="grid">
+                  <div>
+                    <label for="m2-g">Masa pesada (g)</label>
+                    <input id="m2-g" type="number" step="any" min="0" />
+                  </div>
+                  <div>
+                    <label for="m2-v">Volumen final</label>
+                    <div class="row">
+                      <input id="m2-v" type="number" step="any" min="0" />
+                      <select id="m2-vu" aria-label="Unidad de volumen">
+                        <option value="1e-3">mL</option>
+                        <option value="1">L</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="result" id="m2-out"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pane" id="molalidad">
+            <div class="two">
+              <div class="card">
+                <h2>¿Cuánto peso?</h2>
+                <div class="grid">
+                  <div>
+                    <label for="ml-m">Molalidad (mol/kg)</label>
+                    <input id="ml-m" type="number" step="any" min="0" value="0.5" />
+                  </div>
+                  <div>
+                    <label for="ml-s">Disolvente (g)</label>
+                    <input id="ml-s" type="number" step="any" min="0" value="100" />
+                  </div>
+                </div>
+                <div class="result" id="ml-out"></div>
+                <p class="note">masa = m × kg de disolvente × PM ÷ (pureza/100)</p>
+              </div>
+
+              <div class="card">
+                <h2>¿Qué molalidad preparé?</h2>
+                <div class="grid">
+                  <div>
+                    <label for="ml2-g">Soluto (g)</label>
+                    <input id="ml2-g" type="number" step="any" min="0" />
+                  </div>
+                  <div>
+                    <label for="ml2-s">Disolvente (g)</label>
+                    <input id="ml2-s" type="number" step="any" min="0" />
+                  </div>
+                </div>
+                <div class="result" id="ml2-out"></div>
+                <p class="note">No cuenta el agua que aporta un reactivo impuro o hidratado.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="pane" id="normalidad">
+            <div class="two">
+              <div class="card">
+                <h2>¿Cuánto peso?</h2>
+                <div class="grid">
+                  <div>
+                    <label for="n-n">Normalidad (eq/L)</label>
+                    <input id="n-n" type="number" step="any" min="0" value="0.1" />
+                  </div>
+                  <div>
+                    <label for="n-v">Volumen final</label>
+                    <div class="row">
+                      <input id="n-v" type="number" step="any" min="0" value="500" />
+                      <select id="n-vu" aria-label="Unidad de volumen">
+                        <option value="1e-3">mL</option>
+                        <option value="1">L</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="result" id="n-out"></div>
+                <p class="note">masa = N × V(L) × (PM ÷ eq) ÷ (pureza/100). Los equivalentes dependen de la reacción.</p>
+              </div>
+
+              <div class="card">
+                <h2>¿Qué normalidad preparé?</h2>
+                <div class="grid">
+                  <div>
+                    <label for="n2-g">Masa pesada (g)</label>
+                    <input id="n2-g" type="number" step="any" min="0" />
+                  </div>
+                  <div>
+                    <label for="n2-v">Volumen final</label>
+                    <div class="row">
+                      <input id="n2-v" type="number" step="any" min="0" />
+                      <select id="n2-vu" aria-label="Unidad de volumen">
+                        <option value="1e-3">mL</option>
+                        <option value="1">L</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="result" id="n2-out"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pane" id="liquido">
+            <div class="card">
+              <h2>A partir de un reactivo líquido concentrado</h2>
+              <div class="grid">
+                <div>
+                  <label for="l-c">Concentración</label>
+                  <div class="row">
+                    <input id="l-c" type="number" step="any" min="0" value="1" />
+                    <select id="l-cu" aria-label="Unidad de concentración">
+                      <option value="M">M</option>
+                      <option value="N">N</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label for="l-v">Volumen final</label>
+                  <div class="row">
+                    <input id="l-v" type="number" step="any" min="0" value="1000" />
+                    <select id="l-vu" aria-label="Unidad de volumen">
+                      <option value="1e-3">mL</option>
+                      <option value="1">L</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="result" id="l-out"></div>
+              <p class="note">M del concentrado = 10 × % p/p × densidad ÷ PM. Ej.: HCl 37 %, H₂SO₄ 98 %.</p>
+              <p class="note warn">Con ácidos: añade siempre el ácido sobre el agua, despacio y en campana.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- DILUCIONES -->
+        <div class="view" id="v-diluciones">
+          <div class="seg" style="--n: 2">
+            <span class="seg-ind"></span>
+            <button data-tab="dilucion" class="active">C₁V₁ = C₂V₂</button>
+            <button data-tab="seriada">Seriada</button>
+          </div>
+
+          <div class="pane active" id="dilucion">
+            <div class="card">
+              <h2>Dilución simple</h2>
+              <div class="grid">
+                <div>
+                  <label for="d-c1">C₁ inicial</label>
+                  <input id="d-c1" type="number" step="any" min="0" value="1" />
+                </div>
+                <div>
+                  <label for="d-v1">V₁ a tomar</label>
+                  <input id="d-v1" type="number" step="any" min="0" />
+                </div>
+                <div>
+                  <label for="d-c2">C₂ final</label>
+                  <input id="d-c2" type="number" step="any" min="0" value="0.1" />
+                </div>
+                <div>
+                  <label for="d-v2">V₂ final</label>
+                  <input id="d-v2" type="number" step="any" min="0" value="100" />
+                </div>
+              </div>
+              <div class="result" id="d-out"></div>
+              <p class="note">
+                Rellena tres valores y deja vacío el que quieres calcular. Usa la misma unidad en las dos concentraciones
+                y en los dos volúmenes.
+              </p>
+            </div>
+          </div>
+
+          <div class="pane" id="seriada">
+            <div class="card">
+              <h2>Dilución seriada</h2>
+              <div class="grid">
+                <div>
+                  <label for="s-c0">Concentración inicial</label>
+                  <input id="s-c0" type="number" step="any" min="0" value="1" />
+                </div>
+                <div>
+                  <label for="s-u">Unidad</label>
+                  <input id="s-u" value="M" autocapitalize="none" autocorrect="off" />
+                </div>
+                <div>
+                  <label for="s-f">Factor (1:x)</label>
+                  <input id="s-f" type="number" step="any" min="1" value="10" />
+                </div>
+                <div>
+                  <label for="s-n">Nº de tubos</label>
+                  <input id="s-n" type="number" step="1" min="1" max="30" value="6" />
+                </div>
+                <div class="full">
+                  <label for="s-v">Volumen total por tubo (mL)</label>
+                  <input id="s-v" type="number" step="any" min="0" value="10" />
+                </div>
+              </div>
+              <div class="result" id="s-out"></div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Tubo</th>
+                    <th>Dilución</th>
+                    <th>Concentración</th>
+                  </tr>
+                </thead>
+                <tbody id="s-table"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONVERSIONES -->
+        <div class="view" id="v-conversiones">
+          <div class="card">
+            <h2>Convertir unidades de concentración</h2>
+            <div class="grid">
+              <div>
+                <label for="k-v">Valor</label>
+                <input id="k-v" type="number" step="any" min="0" value="0.1" />
+              </div>
+              <div>
+                <label for="k-u">Unidad</label>
+                <select id="k-u">
+                  <option value="M">M (mol/L)</option>
+                  <option value="mM">mM</option>
+                  <option value="N">N (eq/L)</option>
+                  <option value="gL">g/L (= mg/mL)</option>
+                  <option value="pv">% p/v</option>
+                  <option value="ppm">ppm (mg/L)</option>
+                </select>
+              </div>
+            </div>
+            <div class="result" id="k-out"></div>
+            <p class="note">ppm = mg/L, válido para soluciones acuosas diluidas. Se refiere al compuesto puro.</p>
+          </div>
+
+          <div class="card">
+            <h2>Preparar % p/v</h2>
+            <div class="grid">
+              <div>
+                <label for="p-pv">% p/v (g/100 mL)</label>
+                <input id="p-pv" type="number" step="any" min="0" value="5" />
+              </div>
+              <div>
+                <label for="p-v">Volumen final (mL)</label>
+                <input id="p-v" type="number" step="any" min="0" value="100" />
+              </div>
+            </div>
+            <div class="result" id="p-out"></div>
+          </div>
+
+          <div class="card">
+            <h2>Preparar % p/p</h2>
+            <div class="grid">
+              <div>
+                <label for="pp-p">% p/p</label>
+                <input id="pp-p" type="number" step="any" min="0" max="100" value="10" />
+              </div>
+              <div>
+                <label for="pp-m">Masa total (g)</label>
+                <input id="pp-m" type="number" step="any" min="0" value="100" />
+              </div>
+            </div>
+            <div class="result" id="pp-out"></div>
+          </div>
+        </div>
+
+        <!-- COMPUESTOS -->
+        <div class="view" id="v-compuestos">
+          <div class="card">
+            <h2>Compuestos</h2>
+            <input id="b-search" type="search" placeholder="Buscar por nombre o fórmula" enterkeyhint="search" autocomplete="off" />
+            <div id="b-list" style="margin-top: 6px"></div>
+            <p class="note">Toca un compuesto para usarlo en los cálculos.</p>
+          </div>
+
+          <div class="card">
+            <h2>Añadir un compuesto propio</h2>
+            <div class="grid">
+              <div class="full">
+                <label for="a-name">Nombre</label>
+                <input id="a-name" autocomplete="off" />
+              </div>
+              <div class="full">
+                <label for="a-formula">Fórmula (ej.: CuSO4·5H2O)</label>
+                <input id="a-formula" autocapitalize="none" autocorrect="off" spellcheck="false" autocomplete="off" />
+              </div>
+              <div>
+                <label for="a-pur">Pureza (%)</label>
+                <input id="a-pur" type="number" step="any" min="0" max="100" value="99" />
+              </div>
+              <div>
+                <label for="a-eq">Eq/mol</label>
+                <input id="a-eq" type="number" step="any" min="0" value="1" />
+              </div>
+              <div class="full">
+                <label for="a-den">Densidad (g/mL), solo líquidos</label>
+                <input id="a-den" type="number" step="any" min="0" />
+              </div>
+            </div>
+            <div class="result" id="a-out"></div>
+            <button class="primary" id="a-add">Guardar compuesto</button>
+            <p class="note">
+              El peso molecular se calcula a partir de la fórmula. Admite paréntesis e hidratos con «·», «.» o «*». Se
+              guarda solo en este dispositivo.
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <nav>
+      <div class="nav-inner" id="nav">
+        <span class="nav-ind"></span>
+        <button data-view="soluciones" class="active">
+          <svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3M7.5 15h9" /></svg>
+          Soluciones
+        </button>
+        <button data-view="diluciones">
+          <svg viewBox="0 0 24 24"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z" /></svg>
+          Diluciones
+        </button>
+        <button data-view="conversiones">
+          <svg viewBox="0 0 24 24"><path d="M19 5 5 19" /><circle cx="7" cy="7" r="2.5" /><circle cx="17" cy="17" r="2.5" /></svg>
+          Conversiones
+        </button>
+        <button data-view="compuestos">
+          <svg viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" /></svg>
+          Compuestos
+        </button>
+      </div>
+    </nav>
+
+    <script>
+      // Pesos atómicos estándar (IUPAC, abreviados)
+      const AW = {
+        H: 1.008, He: 4.0026, Li: 6.94, Be: 9.0122, B: 10.81, C: 12.011, N: 14.007, O: 15.999, F: 18.998,
+        Ne: 20.18, Na: 22.99, Mg: 24.305, Al: 26.982, Si: 28.085, P: 30.974, S: 32.06, Cl: 35.45, Ar: 39.95,
+        K: 39.098, Ca: 40.078, Sc: 44.956, Ti: 47.867, V: 50.942, Cr: 51.996, Mn: 54.938, Fe: 55.845,
+        Co: 58.933, Ni: 58.693, Cu: 63.546, Zn: 65.38, Ga: 69.723, Ge: 72.63, As: 74.922, Se: 78.971,
+        Br: 79.904, Kr: 83.798, Rb: 85.468, Sr: 87.62, Y: 88.906, Zr: 91.224, Nb: 92.906, Mo: 95.95,
+        Ru: 101.07, Rh: 102.91, Pd: 106.42, Ag: 107.87, Cd: 112.41, In: 114.82, Sn: 118.71, Sb: 121.76,
+        Te: 127.6, I: 126.9, Xe: 131.29, Cs: 132.91, Ba: 137.33, La: 138.91, Ce: 140.12, W: 183.84,
+        Pt: 195.08, Au: 196.97, Hg: 200.59, Tl: 204.38, Pb: 207.2, Bi: 208.98, U: 238.03
+      };
+
+      // Devuelve el peso molecular de una fórmula, o NaN si no se puede interpretar
+      function molecularWeight(formula) {
+        const parts = formula.replace(/\s+/g, '').split(/[·.*]/);
+        let total = 0;
+        for (const part of parts) {
+          if (!part) return NaN;
+          const m = part.match(/^(\d+)?(.+)$/);
+          const coef = m[1] ? parseInt(m[1], 10) : 1;
+          const w = parseGroup(m[2]);
+          if (isNaN(w)) return NaN;
+          total += coef * w;
+        }
+        return total;
+      }
+
+      function parseGroup(s) {
+        const stack = [0];
+        let i = 0;
+        while (i < s.length) {
+          const ch = s[i];
+          if (ch === '(' || ch === '[') {
+            stack.push(0);
+            i++;
+          } else if (ch === ')' || ch === ']') {
+            if (stack.length < 2) return NaN;
+            i++;
+            const num = s.slice(i).match(/^\d+/);
+            const n = num ? parseInt(num[0], 10) : 1;
+            if (num) i += num[0].length;
+            const inner = stack.pop();
+            stack[stack.length - 1] += inner * n;
+          } else {
+            const el = s.slice(i).match(/^([A-Z][a-z]?)(\d*)/);
+            if (!el || !(el[1] in AW)) return NaN;
+            stack[stack.length - 1] += AW[el[1]] * (el[2] ? parseInt(el[2], 10) : 1);
+            i += el[0].length;
+          }
+        }
+        return stack.length === 1 && stack[0] > 0 ? stack[0] : NaN;
+      }
+
+      // [nombre, fórmula, pureza típica %, densidad g/mL (líquidos), equivalentes/mol]
+      const BUILTIN = [
+        ['Ácido clorhídrico conc.', 'HCl', 37, 1.19, 1],
+        ['Ácido sulfúrico conc.', 'H2SO4', 98, 1.84, 2],
+        ['Ácido nítrico conc.', 'HNO3', 70, 1.42, 1],
+        ['Ácido fosfórico conc.', 'H3PO4', 85, 1.69, 3],
+        ['Ácido acético glacial', 'C2H4O2', 99.7, 1.049, 1],
+        ['Ácido perclórico conc.', 'HClO4', 70, 1.67, 1],
+        ['Ácido fluorhídrico', 'HF', 48, 1.15, 1],
+        ['Ácido bromhídrico', 'HBr', 48, 1.49, 1],
+        ['Ácido fórmico', 'CH2O2', 98, 1.22, 1],
+        ['Amoníaco conc.', 'NH3', 28, 0.9, 1],
+        ['Peróxido de hidrógeno', 'H2O2', 30, 1.11, 2],
+        ['Etanol absoluto', 'C2H6O', 99.8, 0.789, 1],
+        ['Metanol', 'CH4O', 99.8, 0.792, 1],
+        ['Hidróxido de sodio', 'NaOH', 98, null, 1],
+        ['Hidróxido de potasio', 'KOH', 85, null, 1],
+        ['Hidróxido de calcio', 'Ca(OH)2', 95, null, 2],
+        ['Hidróxido de bario octahidrato', 'Ba(OH)2·8H2O', 98, null, 2],
+        ['Cloruro de sodio', 'NaCl', 99.5, null, 1],
+        ['Cloruro de potasio', 'KCl', 99.5, null, 1],
+        ['Cloruro de amonio', 'NH4Cl', 99.5, null, 1],
+        ['Cloruro de calcio anhidro', 'CaCl2', 96, null, 2],
+        ['Cloruro de calcio dihidrato', 'CaCl2·2H2O', 99, null, 2],
+        ['Cloruro de magnesio hexahidrato', 'MgCl2·6H2O', 99, null, 2],
+        ['Cloruro de bario dihidrato', 'BaCl2·2H2O', 99, null, 2],
+        ['Cloruro férrico hexahidrato', 'FeCl3·6H2O', 98, null, 3],
+        ['Carbonato de sodio', 'Na2CO3', 99.5, null, 2],
+        ['Bicarbonato de sodio', 'NaHCO3', 99.5, null, 1],
+        ['Carbonato de calcio', 'CaCO3', 99, null, 2],
+        ['Sulfato de sodio', 'Na2SO4', 99, null, 2],
+        ['Sulfato de potasio', 'K2SO4', 99, null, 2],
+        ['Sulfato de amonio', '(NH4)2SO4', 99, null, 2],
+        ['Sulfato de magnesio heptahidrato', 'MgSO4·7H2O', 99, null, 2],
+        ['Sulfato de cobre pentahidrato', 'CuSO4·5H2O', 99, null, 2],
+        ['Sulfato ferroso heptahidrato', 'FeSO4·7H2O', 99, null, 1],
+        ['Sulfato de zinc heptahidrato', 'ZnSO4·7H2O', 99, null, 2],
+        ['Sal de Mohr', 'Fe(NH4)2(SO4)2·6H2O', 99, null, 1],
+        ['Nitrato de plata', 'AgNO3', 99.8, null, 1],
+        ['Nitrato de sodio', 'NaNO3', 99, null, 1],
+        ['Nitrato de potasio', 'KNO3', 99, null, 1],
+        ['Nitrato de plomo', 'Pb(NO3)2', 99, null, 2],
+        ['Permanganato de potasio', 'KMnO4', 99, null, 5],
+        ['Dicromato de potasio', 'K2Cr2O7', 99.5, null, 6],
+        ['Tiosulfato de sodio pentahidrato', 'Na2S2O3·5H2O', 99.5, null, 1],
+        ['Yoduro de potasio', 'KI', 99, null, 1],
+        ['Yodato de potasio', 'KIO3', 99.5, null, 6],
+        ['Yodo', 'I2', 99.8, null, 2],
+        ['Tiocianato de potasio', 'KSCN', 99, null, 1],
+        ['Ferrocianuro de potasio trihidrato', 'K4Fe(CN)6·3H2O', 99, null, 1],
+        ['Ferricianuro de potasio', 'K3Fe(CN)6', 99, null, 1],
+        ['Biftalato de potasio (KHP)', 'C8H5KO4', 99.95, null, 1],
+        ['Ácido oxálico dihidrato', 'H2C2O4·2H2O', 99.5, null, 2],
+        ['Oxalato de sodio', 'Na2C2O4', 99.5, null, 2],
+        ['Bórax', 'Na2B4O7·10H2O', 99.5, null, 2],
+        ['Ácido bórico', 'H3BO3', 99.5, null, 1],
+        ['Ácido cítrico anhidro', 'C6H8O7', 99.5, null, 3],
+        ['Citrato trisódico dihidrato', 'Na3C6H5O7·2H2O', 99, null, 3],
+        ['Ácido ascórbico', 'C6H8O6', 99, null, 2],
+        ['Ácido sulfámico', 'H3NSO3', 99.5, null, 1],
+        ['EDTA disódico dihidrato', 'C10H14N2Na2O8·2H2O', 99, null, 2],
+        ['EDTA (ácido libre)', 'C10H16N2O8', 99, null, 4],
+        ['Acetato de sodio anhidro', 'C2H3NaO2', 99, null, 1],
+        ['Acetato de sodio trihidrato', 'C2H3NaO2·3H2O', 99, null, 1],
+        ['Fosfato monosódico anhidro', 'NaH2PO4', 99, null, 1],
+        ['Fosfato disódico anhidro', 'Na2HPO4', 99, null, 2],
+        ['Fosfato monopotásico', 'KH2PO4', 99, null, 1],
+        ['Fosfato dipotásico', 'K2HPO4', 99, null, 2],
+        ['Tris (base)', 'C4H11NO3', 99.8, null, 1],
+        ['HEPES', 'C8H18N2O4S', 99.5, null, 1],
+        ['Glicina', 'C2H5NO2', 99, null, 1],
+        ['Urea', 'CH4N2O', 99.5, null, 1],
+        ['Glucosa anhidra', 'C6H12O6', 99.5, null, 1],
+        ['Sacarosa', 'C12H22O11', 99.5, null, 1],
+        ['Dodecilsulfato sódico (SDS)', 'C12H25NaO4S', 99, null, 1]
+      ].map(([name, formula, purity, density, eq]) => ({ name, formula, purity, density, eq, custom: false }));
+
+      const STORE_KEY = 'labcalc-compuestos';
+      let custom = [];
+      try {
+        custom = JSON.parse(localStorage.getItem(STORE_KEY)) || [];
+      } catch (e) {
+        custom = [];
+      }
+
+      const $ = (id) => document.getElementById(id);
+      const val = (id) => parseFloat($(id).value);
+      const ok = (...xs) => xs.every((x) => isFinite(x) && x > 0);
+      const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+      const prettyFormula = (f) => esc(f).replace(/([A-Za-z)\]])(\d+)/g, '$1<sub>$2</sub>');
+      const allCompounds = () => BUILTIN.concat(custom);
+
+      function fmt(x) {
+        if (!isFinite(x)) return '—';
+        if (x === 0) return '0';
+        const a = Math.abs(x);
+        if (a < 1e-4 || a >= 1e7) return x.toExponential(3).replace('.', ',');
+        return Number(x.toPrecision(5)).toLocaleString('es', { maximumSignificantDigits: 5 });
+      }
+
+      // Masa con la unidad más cómoda
+      function mass(g) {
+        if (g >= 1000) return fmt(g / 1000) + ' kg';
+        if (g >= 1) return fmt(g) + ' g';
+        if (g >= 1e-3) return fmt(g * 1e3) + ' mg';
+        return fmt(g * 1e6) + ' µg';
+      }
+
+      function volume(L) {
+        if (L >= 1) return fmt(L) + ' L';
+        if (L >= 1e-3) return fmt(L * 1e3) + ' mL';
+        return fmt(L * 1e6) + ' µL';
+      }
+
+      const HINT = '<small>Rellena los datos para ver el resultado.</small>';
+      const NO_MW = '<small class="warn">Elige un compuesto o escribe su peso molecular y pureza.</small>';
+
+      function selectCompound(c) {
+        $('c-search').value = c.name;
+        $('c-mw').value = Number(molecularWeight(c.formula).toFixed(3));
+        $('c-pur').value = c.purity;
+        $('c-den').value = c.density || '';
+        $('c-eq').value = c.eq;
+        $('c-name').textContent = c.name;
+        $('c-formula').innerHTML = '· ' + prettyFormula(c.formula);
+        // reinicia la animación de la línea del compuesto
+        const card = $('compound');
+        card.classList.remove('pop');
+        void card.offsetWidth;
+        card.classList.add('pop');
+        recalc();
+      }
+
+      function renderLists() {
+        $('c-list').innerHTML = allCompounds()
+          .map((c) => `<option value="${esc(c.name)}">${esc(c.formula)}</option>`)
+          .join('');
+
+        const q = $('b-search').value.trim().toLowerCase();
+        const items = allCompounds()
+          .map((c, i) => ({ c, i }))
+          .filter(({ c }) => !q || c.name.toLowerCase().includes(q) || c.formula.toLowerCase().includes(q))
+          .sort((a, b) => a.c.name.localeCompare(b.c.name, 'es'));
+
+        $('b-list').innerHTML = items.length
+          ? items
+              .map(
+                ({ c, i }) => `<div class="item" role="button" tabindex="0" data-i="${i}">
+                  <span class="item-main">
+                    <b>${esc(c.name)}</b>
+                    <small>${prettyFormula(c.formula)} · ${fmt(c.purity)} %${c.density ? ` · ${fmt(c.density)} g/mL` : ''} · ${fmt(c.eq)} eq</small>
+                  </span>
+                  <span class="item-mw">${fmt(Number(molecularWeight(c.formula).toFixed(2)))}<small>g/mol</small></span>
+                  ${c.custom ? `<button data-del="${i - BUILTIN.length}" aria-label="Eliminar ${esc(c.name)}">✕</button>` : ''}
+                </div>`
+              )
+              .join('')
+          : '<p class="note">Ningún compuesto coincide. Puedes añadirlo más abajo.</p>';
+      }
+
+      function recalc() {
+        const MW = val('c-mw');
+        const P = val('c-pur') / 100;
+        const D = val('c-den');
+        const EQ = val('c-eq');
+        const base = ok(MW, P) && P <= 1;
+
+        // Molaridad
+        {
+          const C = val('m-c') * val('m-cu');
+          const V = val('m-v') * val('m-vu');
+          if (!base) $('m-out').innerHTML = NO_MW;
+          else if (!ok(C, V)) $('m-out').innerHTML = HINT;
+          else {
+            const g = (C * V * MW) / P;
+            let html = `Pesar <b>${mass(g)}</b> y aforar a ${volume(V)}.`;
+            if (ok(D)) html += `<br>Como es líquido: medir <b>${volume(g / D / 1000)}</b> (densidad ${fmt(D)} g/mL).`;
+            html += `<br><small>${fmt(C * V)} mol de soluto puro</small>`;
+            $('m-out').innerHTML = html;
+          }
+
+          const g2 = val('m2-g');
+          const V2 = val('m2-v') * val('m2-vu');
+          if (!base) $('m2-out').innerHTML = NO_MW;
+          else if (!ok(g2, V2)) $('m2-out').innerHTML = HINT;
+          else {
+            const M = (g2 * P) / MW / V2;
+            $('m2-out').innerHTML = `<b>${fmt(M)} M</b><br><small>${fmt(M * 1000)} mM · ${fmt(M * MW)} g/L</small>`;
+          }
+        }
+
+        // Molalidad
+        {
+          const m = val('ml-m');
+          const s = val('ml-s');
+          if (!base) $('ml-out').innerHTML = NO_MW;
+          else if (!ok(m, s)) $('ml-out').innerHTML = HINT;
+          else {
+            const g = (m * (s / 1000) * MW) / P;
+            $('ml-out').innerHTML = `Pesar <b>${mass(g)}</b> y disolver en ${mass(s)} de disolvente.`;
+          }
+
+          const g2 = val('ml2-g');
+          const s2 = val('ml2-s');
+          if (!base) $('ml2-out').innerHTML = NO_MW;
+          else if (!ok(g2, s2)) $('ml2-out').innerHTML = HINT;
+          else {
+            const pure = g2 * P;
+            const molal = pure / MW / (s2 / 1000);
+            $('ml2-out').innerHTML = `<b>${fmt(molal)} mol/kg</b><br><small>${fmt((100 * pure) / (g2 + s2))} % p/p de soluto puro</small>`;
+          }
+        }
+
+        // Normalidad
+        {
+          const N = val('n-n');
+          const V = val('n-v') * val('n-vu');
+          if (!base || !ok(EQ)) $('n-out').innerHTML = NO_MW;
+          else if (!ok(N, V)) $('n-out').innerHTML = HINT;
+          else {
+            const g = (N * V * MW) / EQ / P;
+            let html = `Pesar <b>${mass(g)}</b> y aforar a ${volume(V)}.`;
+            if (ok(D)) html += `<br>Como es líquido: medir <b>${volume(g / D / 1000)}</b>.`;
+            html += `<br><small>Peso equivalente: ${fmt(MW / EQ)} g/eq · equivale a ${fmt(N / EQ)} M</small>`;
+            $('n-out').innerHTML = html;
+          }
+
+          const g2 = val('n2-g');
+          const V2 = val('n2-v') * val('n2-vu');
+          if (!base || !ok(EQ)) $('n2-out').innerHTML = NO_MW;
+          else if (!ok(g2, V2)) $('n2-out').innerHTML = HINT;
+          else {
+            const M = (g2 * P) / MW / V2;
+            $('n2-out').innerHTML = `<b>${fmt(M * EQ)} N</b><br><small>${fmt(M)} M × ${fmt(EQ)} eq/mol</small>`;
+          }
+        }
+
+        // Reactivo líquido concentrado
+        {
+          const C = val('l-c');
+          const V = val('l-v') * val('l-vu');
+          const inN = $('l-cu').value === 'N';
+          if (!base || !ok(D)) {
+            $('l-out').innerHTML = '<small class="warn">Hace falta peso molecular, pureza (% p/p) y densidad. Elige un reactivo líquido, como el ácido clorhídrico.</small>';
+          } else if (inN && !ok(EQ)) {
+            $('l-out').innerHTML = NO_MW;
+          } else {
+            const Mstock = (1000 * D * P) / MW;
+            let html = `El concentrado es <b>${fmt(Mstock)} M</b>` + (ok(EQ) ? ` (${fmt(Mstock * EQ)} N)` : '') + '.';
+            if (ok(C, V)) {
+              const target = inN ? C / EQ : C;
+              if (target > Mstock) html += '<br><span class="warn">La concentración pedida es mayor que la del reactivo.</span>';
+              else {
+                const Vs = (target * V) / Mstock;
+                html += `<br>Medir <b>${volume(Vs)}</b> de concentrado y aforar a ${volume(V)}.`;
+              }
+            }
+            $('l-out').innerHTML = html;
+          }
+        }
+
+        // C1V1 = C2V2
+        {
+          const ids = ['d-c1', 'd-v1', 'd-c2', 'd-v2'];
+          const x = ids.map(val);
+          const empty = ids.filter((id) => $(id).value.trim() === '');
+          if (empty.length !== 1 || !ok(...x.filter((_, i) => ids[i] !== empty[0]))) {
+            $('d-out').innerHTML = '<small>Deja vacío exactamente un campo y rellena los otros tres.</small>';
+          } else {
+            let [c1, v1, c2, v2] = x;
+            const which = empty[0];
+            if (which === 'd-c1') c1 = (c2 * v2) / v1;
+            if (which === 'd-v1') v1 = (c2 * v2) / c1;
+            if (which === 'd-c2') c2 = (c1 * v1) / v2;
+            if (which === 'd-v2') v2 = (c1 * v1) / c2;
+            const label = { 'd-c1': 'C₁', 'd-v1': 'V₁', 'd-c2': 'C₂', 'd-v2': 'V₂' }[which];
+            const result = { 'd-c1': c1, 'd-v1': v1, 'd-c2': c2, 'd-v2': v2 }[which];
+            if (v1 > v2 || c2 > c1) {
+              $('d-out').innerHTML = `<b>${label} = ${fmt(result)}</b><br><span class="warn">Revisa los datos: en una dilución C₂ debe ser menor que C₁ y V₁ menor que V₂.</span>`;
+            } else {
+              $('d-out').innerHTML = `<b>${label} = ${fmt(result)}</b><br><small>Tomar ${fmt(v1)} de la solución inicial y añadir ${fmt(v2 - v1)} de disolvente hasta ${fmt(v2)} · dilución 1:${fmt(c1 / c2)}</small>`;
+            }
+          }
+        }
+
+        // Dilución seriada
+        {
+          const c0 = val('s-c0');
+          const f = val('s-f');
+          const n = Math.min(30, Math.floor(val('s-n')));
+          const vt = val('s-v');
+          const unit = esc($('s-u').value.trim());
+          if (!ok(c0, f, n, vt) || f <= 1) {
+            $('s-out').innerHTML = '<small>Rellena los datos. El factor debe ser mayor que 1.</small>';
+            $('s-table').innerHTML = '';
+          } else {
+            const transfer = vt / f;
+            $('s-out').innerHTML = `En cada tubo: <b>${fmt(vt - transfer)} mL</b> de diluyente + <b>${fmt(transfer)} mL</b> del tubo anterior.<br><small>El tubo 1 se prepara con la solución inicial. Mezclar bien antes de cada transferencia.</small>`;
+            let rows = '';
+            for (let i = 1; i <= n; i++) {
+              rows += `<tr><td>${i}</td><td>1:${fmt(Math.pow(f, i))}</td><td>${fmt(c0 / Math.pow(f, i))} ${unit}</td></tr>`;
+            }
+            $('s-table').innerHTML = rows;
+          }
+        }
+
+        // Porcentajes
+        {
+          const pv = val('p-pv');
+          const V = val('p-v');
+          if (!ok(P) || P > 1) $('p-out').innerHTML = NO_MW;
+          else if (!ok(pv, V)) $('p-out').innerHTML = HINT;
+          else {
+            const g = (pv * V) / 100 / P;
+            let html = `Pesar <b>${mass(g)}</b> y aforar a ${fmt(V)} mL.`;
+            if (ok(MW)) html += `<br><small>Equivale a ${fmt((pv * 10) / MW)} M</small>`;
+            $('p-out').innerHTML = html;
+          }
+
+          const pp = val('pp-p');
+          const mt = val('pp-m');
+          if (!ok(P) || P > 1) $('pp-out').innerHTML = NO_MW;
+          else if (!ok(pp, mt)) $('pp-out').innerHTML = HINT;
+          else {
+            const g = (pp * mt) / 100 / P;
+            if (g > mt) $('pp-out').innerHTML = '<span class="warn">No se puede alcanzar ese % con la pureza del reactivo.</span>';
+            else $('pp-out').innerHTML = `Pesar <b>${mass(g)}</b> de reactivo y <b>${mass(mt - g)}</b> de disolvente.`;
+          }
+        }
+
+        // Conversiones
+        {
+          const x = val('k-v');
+          const u = $('k-u').value;
+          if (!ok(MW)) $('k-out').innerHTML = NO_MW;
+          else if (!ok(x) || (u === 'N' && !ok(EQ))) $('k-out').innerHTML = HINT;
+          else {
+            const M = { M: x, mM: x / 1000, N: x / EQ, gL: x / MW, pv: (x * 10) / MW, ppm: x / 1000 / MW }[u];
+            const gL = M * MW;
+            $('k-out').innerHTML =
+              `<b>${fmt(M)} M</b> · ${fmt(M * 1000)} mM` +
+              (ok(EQ) ? ` · ${fmt(M * EQ)} N` : '') +
+              `<br>${fmt(gL)} g/L · ${fmt(gL / 10)} % p/v · ${fmt(gL * 1000)} ppm`;
+          }
+        }
+
+        // Vista previa del compuesto nuevo
+        {
+          const f = $('a-formula').value.trim();
+          if (!f) $('a-out').innerHTML = '<small>Escribe la fórmula para calcular el peso molecular.</small>';
+          else {
+            const w = molecularWeight(f);
+            $('a-out').innerHTML = isNaN(w)
+              ? '<span class="warn">No reconozco esa fórmula. Respeta mayúsculas y minúsculas (NaCl, no nacl).</span>'
+              : `${prettyFormula(f)} → <b>${fmt(Number(w.toFixed(3)))} g/mol</b>`;
+          }
+        }
+      }
+
+      // Navegación inferior: cambia de vista
+      const VIEWS = ['soluciones', 'diluciones', 'conversiones', 'compuestos'];
+
+      function showView(name) {
+        const i = VIEWS.indexOf(name);
+        document.querySelectorAll('#nav button').forEach((b) => b.classList.toggle('active', b.dataset.view === name));
+        document.querySelectorAll('.view').forEach((v) => v.classList.toggle('active', v.id === 'v-' + name));
+        document.querySelector('.nav-ind').style.transform = `translateX(${i * 100}%)`;
+        // el compuesto no interviene en las diluciones ni en el listado
+        $('compound').hidden = name === 'diluciones' || name === 'compuestos';
+        window.scrollTo(0, 0);
+      }
+
+      $('nav').addEventListener('click', (e) => {
+        const btn = e.target.closest('button');
+        if (btn) showView(btn.dataset.view);
+      });
+
+      // Controles segmentados: cambian de panel dentro de una vista
+      document.querySelectorAll('.seg').forEach((seg) => {
+        const buttons = [...seg.querySelectorAll('button')];
+        seg.addEventListener('click', (e) => {
+          const btn = e.target.closest('button');
+          if (!btn) return;
+          buttons.forEach((b) => {
+            b.classList.toggle('active', b === btn);
+            $(b.dataset.tab).classList.toggle('active', b === btn);
+          });
+          seg.querySelector('.seg-ind').style.transform = `translateX(${buttons.indexOf(btn) * 100}%)`;
+        });
+      });
+
+      $('c-search').addEventListener('input', () => {
+        const q = $('c-search').value.trim().toLowerCase();
+        const c = allCompounds().find((c) => c.name.toLowerCase() === q);
+        if (c) selectCompound(c);
+      });
+
+      $('b-search').addEventListener('input', renderLists);
+
+      function pickFromList(e) {
+        const del = e.target.closest('[data-del]');
+        if (del) {
+          custom.splice(Number(del.dataset.del), 1);
+          saveCustom();
+          renderLists();
+          return;
+        }
+        const item = e.target.closest('.item');
+        if (!item) return;
+        selectCompound(allCompounds()[Number(item.dataset.i)]);
+        showView('soluciones');
+      }
+
+      $('b-list').addEventListener('click', pickFromList);
+      $('b-list').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && e.target.classList.contains('item')) pickFromList(e);
+      });
+
+      function saveCustom() {
+        try {
+          localStorage.setItem(STORE_KEY, JSON.stringify(custom));
+        } catch (e) {
+          // sin almacenamiento disponible: el compuesto dura hasta cerrar la página
+        }
+      }
+
+      $('a-add').addEventListener('click', () => {
+        const name = $('a-name').value.trim();
+        const formula = $('a-formula').value.trim();
+        const purity = val('a-pur');
+        const eq = val('a-eq');
+        if (!name || isNaN(molecularWeight(formula)) || !ok(purity, eq) || purity > 100) {
+          $('a-out').innerHTML = '<span class="warn">Revisa el nombre, la fórmula, la pureza (0–100) y los equivalentes.</span>';
+          return;
+        }
+        const c = { name, formula, purity, density: val('a-den') || null, eq, custom: true };
+        custom.push(c);
+        saveCustom();
+        renderLists();
+        $('a-name').value = '';
+        $('a-formula').value = '';
+        selectCompound(c);
+        showView('soluciones');
+      });
+
+      document.addEventListener('input', recalc);
+
+      // teclado decimal en el móvil
+      document.querySelectorAll('input[type=number]').forEach((el) => (el.inputMode = 'decimal'));
+
+      renderLists();
+      selectCompound(BUILTIN.find((c) => c.formula === 'NaCl'));
+
+      // Funcionamiento sin conexión cuando la app está alojada en un servidor
+      if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      }
+    </script>
+  </body>
+</html>

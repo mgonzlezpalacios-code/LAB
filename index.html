@@ -549,19 +549,19 @@
           <div class="grid four">
             <div>
               <label for="c-mw">PM g/mol</label>
-              <input id="c-mw" type="number" step="any" min="0" />
+              <input id="c-mw" type="text" inputmode="decimal" step="any" min="0" />
             </div>
             <div>
               <label for="c-pur">Pureza %</label>
-              <input id="c-pur" type="number" step="any" min="0" max="100" />
+              <input id="c-pur" type="text" inputmode="decimal" step="any" min="0" max="100" />
             </div>
             <div>
               <label for="c-den">Dens. g/mL</label>
-              <input id="c-den" type="number" step="any" min="0" placeholder="—" />
+              <input id="c-den" type="text" inputmode="decimal" step="any" min="0" placeholder="—" />
             </div>
             <div>
               <label for="c-eq">Eq/mol</label>
-              <input id="c-eq" type="number" step="any" min="0" />
+              <input id="c-eq" type="text" inputmode="decimal" step="any" min="0" />
             </div>
           </div>
           <p class="compound-line">
@@ -588,7 +588,7 @@
                   <div>
                     <label for="m-c">Concentración</label>
                     <div class="row">
-                      <input id="m-c" type="number" step="any" min="0" value="0.1" />
+                      <input id="m-c" type="text" inputmode="decimal" step="any" min="0" value="0.1" />
                       <select id="m-cu" aria-label="Unidad de concentración">
                         <option value="1">M</option>
                         <option value="1e-3">mM</option>
@@ -599,7 +599,7 @@
                   <div>
                     <label for="m-v">Volumen final</label>
                     <div class="row">
-                      <input id="m-v" type="number" step="any" min="0" value="250" />
+                      <input id="m-v" type="text" inputmode="decimal" step="any" min="0" value="250" />
                       <select id="m-vu" aria-label="Unidad de volumen">
                         <option value="1e-3">mL</option>
                         <option value="1">L</option>
@@ -617,12 +617,12 @@
                 <div class="grid">
                   <div>
                     <label for="m2-g">Masa pesada (g)</label>
-                    <input id="m2-g" type="number" step="any" min="0" />
+                    <input id="m2-g" type="text" inputmode="decimal" step="any" min="0" />
                   </div>
                   <div>
                     <label for="m2-v">Volumen final</label>
                     <div class="row">
-                      <input id="m2-v" type="number" step="any" min="0" />
+                      <input id="m2-v" type="text" inputmode="decimal" step="any" min="0" />
                       <select id="m2-vu" aria-label="Unidad de volumen">
                         <option value="1e-3">mL</option>
                         <option value="1">L</option>
@@ -642,11 +642,11 @@
                 <div class="grid">
                   <div>
                     <label for="ml-m">Molalidad (mol/kg)</label>
-                    <input id="ml-m" type="number" step="any" min="0" value="0.5" />
+                    <input id="ml-m" type="text" inputmode="decimal" step="any" min="0" value="0.5" />
                   </div>
                   <div>
                     <label for="ml-s">Disolvente (g)</label>
-                    <input id="ml-s" type="number" step="any" min="0" value="100" />
+                    <input id="ml-s" type="text" inputmode="decimal" step="any" min="0" value="100" />
                   </div>
                 </div>
                 <div class="result" id="ml-out"></div>
@@ -658,11 +658,11 @@
                 <div class="grid">
                   <div>
                     <label for="ml2-g">Soluto (g)</label>
-                    <input id="ml2-g" type="number" step="any" min="0" />
+                    <input id="ml2-g" type="text" inputmode="decimal" step="any" min="0" />
                   </div>
                   <div>
                     <label for="ml2-s">Disolvente (g)</label>
-                    <input id="ml2-s" type="number" step="any" min="0" />
+                    <input id="ml2-s" type="text" inputmode="decimal" step="any" min="0" />
                   </div>
                 </div>
                 <div class="result" id="ml2-out"></div>
@@ -678,12 +678,12 @@
                 <div class="grid">
                   <div>
                     <label for="n-n">Normalidad (eq/L)</label>
-                    <input id="n-n" type="number" step="any" min="0" value="0.1" />
+                    <input id="n-n" type="text" inputmode="decimal" step="any" min="0" value="0.1" />
                   </div>
                   <div>
                     <label for="n-v">Volumen final</label>
                     <div class="row">
-                      <input id="n-v" type="number" step="any" min="0" value="500" />
+                      <input id="n-v" type="text" inputmode="decimal" step="any" min="0" value="500" />
                       <select id="n-vu" aria-label="Unidad de volumen">
                         <option value="1e-3">mL</option>
                         <option value="1">L</option>
@@ -700,12 +700,12 @@
                 <div class="grid">
                   <div>
                     <label for="n2-g">Masa pesada (g)</label>
-                    <input id="n2-g" type="number" step="any" min="0" />
+                    <input id="n2-g" type="text" inputmode="decimal" step="any" min="0" />
                   </div>
                   <div>
                     <label for="n2-v">Volumen final</label>
                     <div class="row">
-                      <input id="n2-v" type="number" step="any" min="0" />
+                      <input id="n2-v" type="text" inputmode="decimal" step="any" min="0" />
                       <select id="n2-vu" aria-label="Unidad de volumen">
                         <option value="1e-3">mL</option>
                         <option value="1">L</option>
@@ -725,7 +725,7 @@
                 <div>
                   <label for="l-c">Concentración</label>
                   <div class="row">
-                    <input id="l-c" type="number" step="any" min="0" value="1" />
+                    <input id="l-c" type="text" inputmode="decimal" step="any" min="0" value="1" />
                     <select id="l-cu" aria-label="Unidad de concentración">
                       <option value="M">M</option>
                       <option value="N">N</option>
@@ -735,7 +735,7 @@
                 <div>
                   <label for="l-v">Volumen final</label>
                   <div class="row">
-                    <input id="l-v" type="number" step="any" min="0" value="1000" />
+                    <input id="l-v" type="text" inputmode="decimal" step="any" min="0" value="1000" />
                     <select id="l-vu" aria-label="Unidad de volumen">
                       <option value="1e-3">mL</option>
                       <option value="1">L</option>
@@ -764,19 +764,19 @@
               <div class="grid">
                 <div>
                   <label for="d-c1">C₁ inicial</label>
-                  <input id="d-c1" type="number" step="any" min="0" value="1" />
+                  <input id="d-c1" type="text" inputmode="decimal" step="any" min="0" value="1" />
                 </div>
                 <div>
                   <label for="d-v1">V₁ a tomar</label>
-                  <input id="d-v1" type="number" step="any" min="0" />
+                  <input id="d-v1" type="text" inputmode="decimal" step="any" min="0" />
                 </div>
                 <div>
                   <label for="d-c2">C₂ final</label>
-                  <input id="d-c2" type="number" step="any" min="0" value="0.1" />
+                  <input id="d-c2" type="text" inputmode="decimal" step="any" min="0" value="0.1" />
                 </div>
                 <div>
                   <label for="d-v2">V₂ final</label>
-                  <input id="d-v2" type="number" step="any" min="0" value="100" />
+                  <input id="d-v2" type="text" inputmode="decimal" step="any" min="0" value="100" />
                 </div>
               </div>
               <div class="result" id="d-out"></div>
@@ -793,7 +793,7 @@
               <div class="grid">
                 <div>
                   <label for="s-c0">Concentración inicial</label>
-                  <input id="s-c0" type="number" step="any" min="0" value="1" />
+                  <input id="s-c0" type="text" inputmode="decimal" step="any" min="0" value="1" />
                 </div>
                 <div>
                   <label for="s-u">Unidad</label>
@@ -801,15 +801,15 @@
                 </div>
                 <div>
                   <label for="s-f">Factor (1:x)</label>
-                  <input id="s-f" type="number" step="any" min="1" value="10" />
+                  <input id="s-f" type="text" inputmode="decimal" step="any" min="1" value="10" />
                 </div>
                 <div>
                   <label for="s-n">Nº de tubos</label>
-                  <input id="s-n" type="number" step="1" min="1" max="30" value="6" />
+                  <input id="s-n" type="text" inputmode="decimal" step="1" min="1" max="30" value="6" />
                 </div>
                 <div class="full">
                   <label for="s-v">Volumen total por tubo (mL)</label>
-                  <input id="s-v" type="number" step="any" min="0" value="10" />
+                  <input id="s-v" type="text" inputmode="decimal" step="any" min="0" value="10" />
                 </div>
               </div>
               <div class="result" id="s-out"></div>
@@ -834,7 +834,7 @@
             <div class="grid">
               <div>
                 <label for="k-v">Valor</label>
-                <input id="k-v" type="number" step="any" min="0" value="0.1" />
+                <input id="k-v" type="text" inputmode="decimal" step="any" min="0" value="0.1" />
               </div>
               <div>
                 <label for="k-u">Unidad</label>
@@ -857,11 +857,11 @@
             <div class="grid">
               <div>
                 <label for="p-pv">% p/v (g/100 mL)</label>
-                <input id="p-pv" type="number" step="any" min="0" value="5" />
+                <input id="p-pv" type="text" inputmode="decimal" step="any" min="0" value="5" />
               </div>
               <div>
                 <label for="p-v">Volumen final (mL)</label>
-                <input id="p-v" type="number" step="any" min="0" value="100" />
+                <input id="p-v" type="text" inputmode="decimal" step="any" min="0" value="100" />
               </div>
             </div>
             <div class="result" id="p-out"></div>
@@ -872,11 +872,11 @@
             <div class="grid">
               <div>
                 <label for="pp-p">% p/p</label>
-                <input id="pp-p" type="number" step="any" min="0" max="100" value="10" />
+                <input id="pp-p" type="text" inputmode="decimal" step="any" min="0" max="100" value="10" />
               </div>
               <div>
                 <label for="pp-m">Masa total (g)</label>
-                <input id="pp-m" type="number" step="any" min="0" value="100" />
+                <input id="pp-m" type="text" inputmode="decimal" step="any" min="0" value="100" />
               </div>
             </div>
             <div class="result" id="pp-out"></div>
@@ -905,15 +905,15 @@
               </div>
               <div>
                 <label for="a-pur">Pureza (%)</label>
-                <input id="a-pur" type="number" step="any" min="0" max="100" value="99" />
+                <input id="a-pur" type="text" inputmode="decimal" step="any" min="0" max="100" value="99" />
               </div>
               <div>
                 <label for="a-eq">Eq/mol</label>
-                <input id="a-eq" type="number" step="any" min="0" value="1" />
+                <input id="a-eq" type="text" inputmode="decimal" step="any" min="0" value="1" />
               </div>
               <div class="full">
                 <label for="a-den">Densidad (g/mL), solo líquidos</label>
-                <input id="a-den" type="number" step="any" min="0" />
+                <input id="a-den" type="text" inputmode="decimal" step="any" min="0" />
               </div>
             </div>
             <div class="result" id="a-out"></div>
@@ -1089,7 +1089,11 @@
       }
 
       const $ = (id) => document.getElementById(id);
-      const val = (id) => parseFloat($(id).value);
+      // acepta coma o punto como separador decimal
+      const val = (id) => {
+        const s = $(id).value.trim().replace(',', '.');
+        return /^\d*\.?\d+(e[+-]?\d+)?$|^\d+\.$/i.test(s) ? parseFloat(s) : NaN;
+      };
       const ok = (...xs) => xs.every((x) => isFinite(x) && x > 0);
       const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
       const prettyFormula = (f) => esc(f).replace(/([A-Za-z)\]])(\d+)/g, '$1<sub>$2</sub>');
@@ -1449,9 +1453,6 @@
       });
 
       document.addEventListener('input', recalc);
-
-      // teclado decimal en el móvil
-      document.querySelectorAll('input[type=number]').forEach((el) => (el.inputMode = 'decimal'));
 
       renderLists();
       selectCompound(BUILTIN.find((c) => c.formula === 'NaCl'));
